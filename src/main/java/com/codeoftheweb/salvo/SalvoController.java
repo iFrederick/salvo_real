@@ -207,7 +207,7 @@ public class SalvoController {
         map.put(key, value);
         return map;
     }
-    
+
     @RequestMapping(path ="/games", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>>createGame (Authentication authentication){
         if(authentication == null)
@@ -219,7 +219,6 @@ public class SalvoController {
         newGameplayer.setState("WAITINGFOROPP");
         GPrep.save(newGameplayer);
         return new ResponseEntity<>(makeMap("gpid", newGameplayer.getId()), HttpStatus.CREATED);                          //cambio de clave de gpid por gamePlayers
-       }
     }
 
     @RequestMapping(path = "/game/{gameId}/players",method = RequestMethod.POST)
