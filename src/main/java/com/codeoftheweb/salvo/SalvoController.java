@@ -39,7 +39,7 @@ public class SalvoController {
         Map<String,Object> dto = new LinkedHashMap<>();
         dto.put("id",gamePlayer.getJuego().getId());
         dto.put("gamePlayers",gamePlayerList(gamePlayer.getJuego().getGamePlayers()));
-        dto.put("ships",gamePlayer.getShips().stream().map(ship -> ShipDTO(ship)).collect(Collectors.toList()));
+        dto.put("ships", shipList(gamePlayer.getShips()));
         dto.put(("salvoes"),getSalvoList(gamePlayer.getJuego()));
         dto.put("hits",makeHitsDTO(gamePlayer,getOpponent(gamePlayer)));
         dto.put("gameState",gamePlayer.getState());
