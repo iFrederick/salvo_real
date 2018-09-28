@@ -207,39 +207,43 @@ public class SalvoController {
         map.put(key, value);
         return map;
     }
+    
     @RequestMapping(path ="/games", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>>createGame (Authentication authentication){
-        if(authentication == null){
+        if(authentication == null)
             return new ResponseEntity<>(makeMap("error", "Naur, Logeate o Naur, puedes Registrarte too, Guten luck."), HttpStatus.UNAUTHORIZED);
-        }
-       else{
-                Game newGame = (new Game());
-                GameRep.save(newGame);
-                Player player = playerRep.findByUserName(authentication.getName());
-                GamePlayer newGameplayer = (new GamePlayer(player,newGame));
-                newGameplayer.setState("WAITINGFOROPP");
-                GPrep.save(newGameplayer);
-                return new ResponseEntity<>(makeMap("gpid", newGameplayer.getId()), HttpStatus.CREATED);                          //cambio de clave de gpid por gamePlayers
+        Game newGame = (new Game());
+        GameRep.save(newGame);
+        Player player = playerRep.findByUserName(authentication.getName());
+        GamePlayer newGameplayer = (new GamePlayer(player,newGame));
+        newGameplayer.setState("WAITINGFOROPP");
+        GPrep.save(newGameplayer);
+        return new ResponseEntity<>(makeMap("gpid", newGameplayer.getId()), HttpStatus.CREATED);                          //cambio de clave de gpid por gamePlayers
        }
     }
+
     @RequestMapping(path = "/game/{gameId}/players",method = RequestMethod.POST)
     public ResponseEntity<Map<String,Object>>joinGame (@PathVariable long gameId,Authentication authentication){
         if(isGuest(authentication))
-         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         Player player = getLoggedPlayer(authentication);
         Game game = GameRep.findById(gameId).orElse(null);
         if (game == null)
             return new ResponseEntity<>(makeMap("error","No such game noobster"),HttpStatus.FORBIDDEN);
         if (game.getGamePlayers().size()>2)
             return new ResponseEntity<>(makeMap("error","Esta Full"),HttpStatus.FORBIDDEN);
+        // ERRASE 236
         GameRep.save(game);
         GamePlayer gamePlayer = new GamePlayer(player,game);
+        // 239 & 240 could be the same as 241 & 242
         gamePlayer.setState("PLACESHIPS");
         GPrep.save(gamePlayer);
         game.getGamePlayers().get(0).setState("PLACESHIPS");
         GPrep.save(game.getGamePlayers().get(0));
+        // if u delete some of them, delete the last one 241 & 242
         return new ResponseEntity<>(makeMap("gpid",gamePlayer.getId()),HttpStatus.CREATED);
     }
+
     @RequestMapping(path ="games/players/{gpId}/ships",method = RequestMethod.POST)
     public ResponseEntity<Map<String,Object>>addShips(@PathVariable long gpId,@RequestBody  List<Map<String,Object>> shipObjects, Authentication authentication){
         if (isGuest(authentication))
